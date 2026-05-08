@@ -95,12 +95,12 @@ jobs:
           sleep 3
 
           # ── nginx ─────────────────────────────────────────────
-          if [ ! -d "/etc/letsencrypt/live/${SERVER_NAME}" ]; then
+          if [ ! -d "/etc/letsencrypt/live/cmg.akconcepts.co.tz" ]; then
             apt-get update -qq
             apt-get install -y certbot python3-certbot-nginx
 
             # Temporary HTTP config to get the cert
-            cat > /etc/nginx/sites-available/${SERVICE} << EOF
+            cat > /etc/nginx/sites-available/cmg.akconcepts.co.tz << EOF
           server {
               listen 80;
               server_name ${SERVER_NAME};
@@ -121,16 +121,14 @@ jobs:
               }
           }
           EOF
-            ln -sf /etc/nginx/sites-available/${SERVICE} /etc/nginx/sites-enabled/
+            ln -sf /etc/nginx/sites-available/cmg.akconcepts.co.tz /etc/nginx/sites-enabled/
             nginx -t && systemctl reload nginx
 
-            certbot --nginx -d ${SERVER_NAME} \
-              --non-interactive --agree-tos \
-              -m ${ADMIN_EMAIL} --redirect
+            certbot --nginx -d cmg.akconcepts.co.tz --non-interactive --agree-tos -m iam.abiud@gmail.com --redirect
           fi
 
           # Final nginx config (HTTPS + large body)
-          cat > /etc/nginx/sites-available/${SERVICE} << EOF
+          cat > /etc/nginx/sites-available/cmg.akconcepts.co.tz << EOF
           server {
               listen 80;
               server_name ${SERVER_NAME};
