@@ -19,11 +19,19 @@ jobs:
       - name: Add SSH to known hosts
         run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
+      - name: Test SSH connection and dependencies
+        run: |
+          ssh root@${{ secrets.HOST }} "echo 'SSH connection successful'; which node || echo 'Node not found'; node --version || echo 'Node not installed'"
+
       - name: Create deployment script
         run: |
           cat > deploy.sh << 'EOL'
           #!/bin/bash
           set -e
+
+          # Debug logging
+          echo "Starting deployment as $(whoami)"
+          echo "PATH: $PATH"
 
           APP_DIR="/home/cmg80"
           SERVICE="cmg80"
@@ -42,9 +50,18 @@ jobs:
           chmod 755 "$APP_DIR"
           chown -R www-data:www-data "$APP_DIR"
 
-          # ── Node.js via nvm (or system node) ─────────────────
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+          # ── Node.js setup ─────────────────────────────────
+          # Check if node is installed, if not install it
+          if ! command -v node &> /dev/null; then
+            echo "Node.js not found. Installing Node.js 18.x..."
+            curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+            apt-get install -y nodejs
+          fi
+
+          # Get absolute path to node
+          NODE_BIN=$(command -v node)
+          echo "Node found at: $NODE_BIN"
+          echo "Node version: $($NODE_BIN --version)"
 
           cd "$APP_DIR"
           npm ci --omit=dev
@@ -78,7 +95,7 @@ jobs:
           Group=www-data
           WorkingDirectory=${APP_DIR}
           EnvironmentFile=${APP_DIR}/.env
-          ExecStart=$(which node) ${APP_DIR}/server.js
+          ExecStart=${NODE_BIN} ${APP_DIR}/server.js
           Restart=always
           RestartSec=5
           StandardOutput=journal
@@ -94,13 +111,28 @@ jobs:
 
           sleep 3
 
-          # ── nginx ─────────────────────────────────────────────
-          if [ ! -d "/etc/letsencrypt/live/cmg.akconcepts.co.tz" ]; then
+          # Check if service is running
+          if systemctl is-active --quiet ${SERVICE}; then
+            echo "${SERVICE} service is running"
+          else
+            echo "Warning: ${SERVICE} service failed to start"
+            systemctl status ${SERVICE}
+            exit 1
+          fi
+
+          # ── nginx and SSL setup ─────────────────────────────
+          # Install nginx if not present
+          if ! command -v nginx &> /dev/null; then
+            apt-get update -qq
+            apt-get install -y nginx
+          fi
+
+          if [ ! -d "/etc/letsencrypt/live/${SERVER_NAME}" ]; then
             apt-get update -qq
             apt-get install -y certbot python3-certbot-nginx
 
             # Temporary HTTP config to get the cert
-            cat > /etc/nginx/sites-available/cmg.akconcepts.co.tz << EOF
+            cat > /etc/nginx/sites-available/${SERVER_NAME} << EOF
           server {
               listen 80;
               server_name ${SERVER_NAME};
@@ -121,14 +153,15 @@ jobs:
               }
           }
           EOF
-            ln -sf /etc/nginx/sites-available/cmg.akconcepts.co.tz /etc/nginx/sites-enabled/
+            ln -sf /etc/nginx/sites-available/${SERVER_NAME} /etc/nginx/sites-enabled/
             nginx -t && systemctl reload nginx
 
-            certbot --nginx -d cmg.akconcepts.co.tz --non-interactive --agree-tos -m iam.abiud@gmail.com --redirect
+            # Obtain SSL certificate
+            certbot --nginx -d ${SERVER_NAME} --non-interactive --agree-tos -m ${ADMIN_EMAIL} --redirect
           fi
 
           # Final nginx config (HTTPS + large body)
-          cat > /etc/nginx/sites-available/cmg.akconcepts.co.tz << EOF
+          cat > /etc/nginx/sites-available/${SERVER_NAME} << EOF
           server {
               listen 80;
               server_name ${SERVER_NAME};
