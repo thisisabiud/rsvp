@@ -35,9 +35,6 @@
     </div>
     <ul class="nav-links" id="navLinks">
       <li><a href="#hero" class="nav-link">Home</a></li>
-      <li><a href="#invitation" class="nav-link">Invitation</a></li>
-      <li><a href="#gallery" class="nav-link">Gallery</a></li>
-      <li><a href="#details" class="nav-link">Details</a></li>
       <li><a href="#rsvp" class="nav-link nav-link-cta">RSVP</a></li>
     </ul>
     <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
@@ -96,207 +93,45 @@
         <div class="hero-image-border" aria-hidden="true"></div>
       </div>
     </div>
-    <a href="#invitation" class="hero-scroll" aria-label="Scroll down">
+    <a href="#countdown" class="hero-scroll" aria-label="Scroll down">
       <span class="hero-scroll-label">Scroll</span>
       <div class="hero-scroll-line" aria-hidden="true"></div>
     </a>
   </section>
 
   <!-- ══ Invitation ══ -->
-  <section id="invitation" style="justify-content:center;">
-    <div class="invitation-content" style="max-width:720px;margin:0 auto;">
-      <div class="label reveal">The Invitation</div>
-      <h2 class="heading reveal reveal-d1">
-        <em>You Are Cordially</em>
-        Invited
-      </h2>
-      <p class="body-text reveal reveal-d2">
-        It is with great joy and deep pride that we invite you to witness and celebrate a milestone of extraordinary significance — eighty years of wisdom, strength, and unwavering commitment to family, community, and excellence.
-      </p>
-      <div class="divider reveal reveal-d2" aria-hidden="true">
-        <div class="divider-line"></div>
-        <svg class="divider-mark" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2l1.8 5.4H18l-4.9 3.6 1.8 5.4L10 13l-4.9 3.4 1.8-5.4L2 7.4h6.2L10 2z"/></svg>
-        <div class="divider-line"></div>
-      </svg>
-      <blockquote class="invitation-quote reveal reveal-d3">
-        "A harmonious palette that reflects our journey — built on strong roots, solid foundations, and a commitment to excellence."
-      </blockquote>
-      <a href="#rsvp" class="btn-primary reveal reveal-d3">RSVP</a>
+
+  <!-- ══ Countdown ══ -->
+  <div id="countdown" role="timer" aria-label="Countdown to the celebration">
+    <div class="countdown-header">
+      <div class="countdown-tag">Time Until the Celebration</div>
     </div>
-  </section>
-
-  <!-- ══ Gallery ══ -->
-  <section id="gallery">
-    <header class="gallery-header">
-      <div class="label reveal" style="justify-content:center;">The Visual Story</div>
-      <h2 class="heading reveal reveal-d1" style="text-align:center;">
-        <em>Crafted With Care &amp; Purpose</em>
-      </h2>
-      <p class="gallery-count reveal reveal-d2"><span>04</span> Pieces</p>
-    </header>
-    <div class="gallery-grid">
-
-      <div class="gallery-item reveal" onclick="openLightbox('assets/images/0.png')" role="button" tabindex="0" aria-label="View CMG 80 Cover">
-        <img src="assets/images/0.png" alt="CMG 80 Cover" loading="lazy">
-        <div class="gallery-scrim"></div>
-        <div class="gallery-badge">01</div>
-        <div class="gallery-caption">
-          <span class="gallery-caption-line"></span>
-          <span class="gallery-caption-text">The Emblem</span>
-          <span class="gallery-caption-arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </div>
+    <div class="countdown-grid">
+      <div class="countdown-block">
+        <span class="countdown-num" id="cd-days">067</span>
+        <div class="countdown-bar"><div class="countdown-bar-fill" id="cd-days-bar" style="width:80%"></div></div>
+        <span class="countdown-unit">Days</span>
       </div>
-
-      <div class="gallery-item reveal reveal-d1" onclick="openLightbox('assets/images/1.png')" role="button" tabindex="0" aria-label="View Formal Invitation">
-        <img src="assets/images/1.png" alt="Formal Invitation" loading="lazy">
-        <div class="gallery-scrim"></div>
-        <div class="gallery-badge">02</div>
-        <div class="gallery-caption">
-          <span class="gallery-caption-line"></span>
-          <span class="gallery-caption-text">The Invitation</span>
-          <span class="gallery-caption-arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </div>
+      <div class="countdown-sep" aria-hidden="true"></div>
+      <div class="countdown-block">
+        <span class="countdown-num" id="cd-hours">00</span>
+        <div class="countdown-bar"><div class="countdown-bar-fill" id="cd-hours-bar" style="width:60%"></div></div>
+        <span class="countdown-unit">Hours</span>
       </div>
-
-      <div class="gallery-item reveal reveal-d2" onclick="openLightbox('assets/images/2.png')" role="button" tabindex="0" aria-label="View Colour Story">
-        <img src="assets/images/2.png" alt="Colour Story" loading="lazy">
-        <div class="gallery-scrim"></div>
-        <div class="gallery-badge">03</div>
-        <div class="gallery-caption">
-          <span class="gallery-caption-line"></span>
-          <span class="gallery-caption-text">Colour Story</span>
-          <span class="gallery-caption-arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </div>
+      <div class="countdown-sep" aria-hidden="true"></div>
+      <div class="countdown-block">
+        <span class="countdown-num" id="cd-mins">00</span>
+        <div class="countdown-bar"><div class="countdown-bar-fill" id="cd-mins-bar" style="width:40%"></div></div>
+        <span class="countdown-unit">Minutes</span>
       </div>
-
-      <div class="gallery-item reveal reveal-d3" onclick="openLightbox('assets/images/4.png')" role="button" tabindex="0" aria-label="View Save the Date">
-        <img src="assets/images/4.png" alt="Save the Date" loading="lazy">
-        <div class="gallery-scrim"></div>
-        <div class="gallery-badge">04</div>
-        <div class="gallery-caption">
-          <span class="gallery-caption-line"></span>
-          <span class="gallery-caption-text">Save the Date</span>
-          <span class="gallery-caption-arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ══ Colour Story ══ -->
-  <section id="colours">
-    <div class="colours-content">
-      <div class="label reveal">The Colour Story</div>
-      <h2 class="heading reveal reveal-d1">
-        <em>A Palette of</em>
-        Meaning
-      </h2>
-      <p class="body-text reveal reveal-d2">
-        Every colour chosen for this celebration carries intention. Together they tell the story of a life well lived — rooted, purposeful, and luminously achieved.
-      </p>
-      <div class="swatches reveal reveal-d2">
-        <div class="swatch">
-          <div class="swatch-dot" style="background:#4a5a28;" aria-hidden="true"></div>
-          <div class="swatch-name">Olive Green</div>
-          <div class="swatch-meaning">Legacy &amp; Growth</div>
-        </div>
-        <div class="swatch">
-          <div class="swatch-dot" style="background:#1a2410;" aria-hidden="true"></div>
-          <div class="swatch-name">Forest Green</div>
-          <div class="swatch-meaning">Strength &amp; Roots</div>
-        </div>
-        <div class="swatch">
-          <div class="swatch-dot" style="background:#5c3d1e;" aria-hidden="true"></div>
-          <div class="swatch-name">Earth</div>
-          <div class="swatch-meaning">Foundation &amp; Stability</div>
-        </div>
-        <div class="swatch">
-          <div class="swatch-dot" style="background:#d4c4a0;" aria-hidden="true"></div>
-          <div class="swatch-name">Sand</div>
-          <div class="swatch-meaning">Warmth &amp; Balance</div>
-        </div>
-        <div class="swatch">
-          <div class="swatch-dot" style="background:linear-gradient(135deg,#c9a84c,#f5e4a8,#c9a84c);" aria-hidden="true"></div>
-          <div class="swatch-name">Gold</div>
-          <div class="swatch-meaning">Excellence &amp; Achievement</div>
-        </div>
-      </div>
-      <blockquote class="colour-quote reveal reveal-d3">
-        "A harmonious palette that reflects our journey —<br>
-        built on strong roots, solid foundations,<br>
-        and a commitment to excellence."
-      </blockquote>
-    </div>
-    <div class="colours-image reveal reveal-d2">
-      <div class="invitation-image-inner">
-        <img src="assets/images/2.png" alt="Colour Story">
+      <div class="countdown-sep" aria-hidden="true"></div>
+      <div class="countdown-block">
+        <span class="countdown-num" id="cd-secs">00</span>
+        <div class="countdown-bar"><div class="countdown-bar-fill" id="cd-secs-bar" style="width:20%"></div></div>
+        <span class="countdown-unit">Seconds</span>
       </div>
     </div>
-  </section>
-
-  <!-- ══ Event Details ══ -->
-  <section id="details">
-    <div class="details-watermark" aria-hidden="true">80</div>
-    <div class="label reveal" style="justify-content:center;">Event Details</div>
-    <h2 class="heading reveal reveal-d1" style="text-align:center;">
-      <em>Mark Your Calendar</em>
-      18th July 2026
-    </h2>
-    <div class="details-emblem reveal reveal-d1">
-      <img src="assets/images/0.png" alt="CMG 80 Emblem">
-    </div>
-    <div class="details-grid">
-      <div class="detail-card reveal">
-        <div class="detail-card-accent" aria-hidden="true"></div>
-        <div class="detail-icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="6" y="9" width="28" height="24" rx="2" stroke="currentColor" stroke-width="1.2"/>
-            <path d="M6 16h28" stroke="currentColor" stroke-width="1.2"/>
-            <path d="M13 6v6M27 6v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-            <rect x="13" y="21" width="6" height="5" rx="1" fill="currentColor" opacity="0.4"/>
-          </svg>
-        </div>
-        <div class="detail-label">Date</div>
-        <div class="detail-value">Saturday<br>18th July 2026</div>
-      </div>
-      <div class="detail-card reveal reveal-d1">
-        <div class="detail-card-accent" aria-hidden="true"></div>
-        <div class="detail-icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 5C14.477 5 10 9.477 10 15c0 8 10 20 10 20s10-12 10-20c0-5.523-4.477-10-10-10z" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="20" cy="15" r="3.5" stroke="currentColor" stroke-width="1.2"/>
-          </svg>
-        </div>
-        <div class="detail-label">Venue</div>
-        <div class="detail-value">Tarime,<br> Tanzania</div>
-      </div>
-      <div class="detail-card reveal reveal-d2">
-        <div class="detail-card-accent" aria-hidden="true"></div>
-        <div class="detail-icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 12h24v18H8z" rx="1" stroke="currentColor" stroke-width="1.2"/>
-            <path d="M8 12l12 11 12-11" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
-            <path d="M8 30l10-9M32 30L22 21" stroke="currentColor" stroke-width="1.2"/>
-          </svg>
-        </div>
-        <div class="detail-label">Dress Code</div>
-        <div class="detail-value">Formal Attire<br>Green &amp; Gold</div>
-      </div>
-    </div>
-    <div class="details-footnote reveal">
-      <div class="divider-line"></div>
-      <span>✦ &nbsp; Formal Invitation to Follow &nbsp; ✦</span>
-      <div class="divider-line"></div>
-    </div>
-  </section>
+  </div>
 
   <!-- ══ RSVP ══ -->
   <section id="rsvp">

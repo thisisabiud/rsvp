@@ -101,6 +101,60 @@ const $$ = sel => document.querySelectorAll(sel);
   sections.forEach(s => obs.observe(s));
 })();
 
+/* ── Countdown Timer ────────────────────────────── */
+(function initCountdown() {
+  const TARGET = new Date('2026-07-18T09:00:00');
+  const nodes = {
+    days:  $('cd-days'),  hours: $('cd-hours'),
+    mins:  $('cd-mins'),  secs:  $('cd-secs'),
+    daysBar:  $('cd-days-bar'),  hoursBar: $('cd-hours-bar'),
+    minsBar:  $('cd-mins-bar'),  secsBar:  $('cd-secs-bar'),
+  };
+  if (!nodes.days) return;
+
+  let prevVals = {};
+  nodes.days.dataset.pad = 3;
+
+  function setNum(el, val, prev) {
+    const s = String(val).padStart(el.dataset.pad || 2, '0');
+    if (s !== prev) {
+      el.textContent = s;
+      el.classList.remove('tick');
+      void el.offsetWidth;
+      el.classList.add('tick');
+    }
+    return s;
+  }
+
+  function update() {
+    const diff = TARGET - new Date();
+    if (diff <= 0) {
+      ['days','hours','mins','secs'].forEach(k => {
+        nodes[k].textContent = '0'.repeat(k === 'days' ? 3 : 2);
+      });
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+
+    prevVals.days  = setNum(nodes.days,  d, prevVals.days);
+    prevVals.hours = setNum(nodes.hours, h, prevVals.hours);
+    prevVals.mins  = setNum(nodes.mins,  m, prevVals.mins);
+    prevVals.secs  = setNum(nodes.secs,  s, prevVals.secs);
+
+    const totalDays = Math.ceil((TARGET - new Date('2026-01-01')) / 86400000);
+    if (nodes.daysBar)  nodes.daysBar.style.width  = ((d / Math.max(totalDays, 365)) * 100).toFixed(1) + '%';
+    if (nodes.hoursBar) nodes.hoursBar.style.width = ((h / 23) * 100).toFixed(1) + '%';
+    if (nodes.minsBar)  nodes.minsBar.style.width  = ((m / 59) * 100).toFixed(1) + '%';
+    if (nodes.secsBar)  nodes.secsBar.style.width  = ((s / 59) * 100).toFixed(1) + '%';
+  }
+
+  update();
+  setInterval(update, 1000);
+})();
+
 /* ── Scroll Reveal ──────────────────────────────── */
 (function initReveal() {
   const obs = new IntersectionObserver(entries => {
