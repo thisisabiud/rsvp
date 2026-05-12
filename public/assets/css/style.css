@@ -847,6 +847,47 @@ footer { background: var(--forest-mid); border-top: 1px solid var(--gold-dim); }
   #colours    { gap: 100px; }
 }
 
+/* ════════ MOBILE HERO: clean image card ════════════
+   On small screens the invitation card image contains
+   all the needed text — hide HTML overlay & dark scrims
+   so the card is fully visible and unobscured.
+   ════════════════════════════════════════════════════ */
+@media (max-width: 899px) {
+  /* Hide the HTML text layer — card image has all info */
+  .hero-left { display: none !important; }
+
+  /* Remove dark scrim that hides the card */
+  .hero-image-border { background: none !important; }
+
+  /* Remove background texture layer */
+  .hero-bg-texture { display: none !important; }
+
+  /* Let the hero height match the image naturally */
+  #hero { min-height: 100dvh; background: var(--black); }
+
+  /* Make image fill and show as much of the card as possible */
+  .hero-image-frame img {
+    object-fit: contain;
+    background: var(--black);
+  }
+
+  /* Floating RSVP CTA pinned to bottom of hero on mobile */
+  .hero-mobile-cta {
+    display: flex;
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    white-space: nowrap;
+  }
+}
+
+/* Hide mobile CTA on desktop — hero-left has its own button */
+@media (min-width: 900px) {
+  .hero-mobile-cta { display: none !important; }
+}
+
 /* ── Reduced motion ─────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
