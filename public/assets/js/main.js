@@ -101,60 +101,6 @@ const $$ = sel => document.querySelectorAll(sel);
   sections.forEach(s => obs.observe(s));
 })();
 
-/* ── Countdown Timer ────────────────────────────── */
-(function initCountdown() {
-  const TARGET = new Date('2026-07-18T09:00:00');
-  const nodes = {
-    days:  $('cd-days'),  hours: $('cd-hours'),
-    mins:  $('cd-mins'),  secs:  $('cd-secs'),
-    daysBar:  $('cd-days-bar'),  hoursBar: $('cd-hours-bar'),
-    minsBar:  $('cd-mins-bar'),  secsBar:  $('cd-secs-bar'),
-  };
-  if (!nodes.days) return;
-
-  let prevVals = {};
-  nodes.days.dataset.pad = 3;
-
-  function setNum(el, val, prev) {
-    const s = String(val).padStart(el.dataset.pad || 2, '0');
-    if (s !== prev) {
-      el.textContent = s;
-      el.classList.remove('tick');
-      void el.offsetWidth;
-      el.classList.add('tick');
-    }
-    return s;
-  }
-
-  function update() {
-    const diff = TARGET - new Date();
-    if (diff <= 0) {
-      ['days','hours','mins','secs'].forEach(k => {
-        nodes[k].textContent = '0'.repeat(k === 'days' ? 3 : 2);
-      });
-      return;
-    }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-
-    prevVals.days  = setNum(nodes.days,  d, prevVals.days);
-    prevVals.hours = setNum(nodes.hours, h, prevVals.hours);
-    prevVals.mins  = setNum(nodes.mins,  m, prevVals.mins);
-    prevVals.secs  = setNum(nodes.secs,  s, prevVals.secs);
-
-    const totalDays = Math.ceil((TARGET - new Date('2026-01-01')) / 86400000);
-    if (nodes.daysBar)  nodes.daysBar.style.width  = ((d / Math.max(totalDays, 365)) * 100).toFixed(1) + '%';
-    if (nodes.hoursBar) nodes.hoursBar.style.width = ((h / 23) * 100).toFixed(1) + '%';
-    if (nodes.minsBar)  nodes.minsBar.style.width  = ((m / 59) * 100).toFixed(1) + '%';
-    if (nodes.secsBar)  nodes.secsBar.style.width  = ((s / 59) * 100).toFixed(1) + '%';
-  }
-
-  update();
-  setInterval(update, 1000);
-})();
-
 /* ── Scroll Reveal ──────────────────────────────── */
 (function initReveal() {
   const obs = new IntersectionObserver(entries => {
@@ -219,6 +165,8 @@ const $$ = sel => document.querySelectorAll(sel);
   let mediaRecorder  = null;
   let recordedChunks = [];
   let recordedBlob   = null;
+  let preUploadedId  = null;   // set as soon as recording finishes — before submit
+  let preUploading   = false;  // true while XHR is in flight
   let recTimer       = null;
   let recSeconds     = 0;
   const MAX_SEC      = 15;
@@ -295,10 +243,32 @@ const $$ = sel => document.querySelectorAll(sel);
   });
 
   function buildAndSubmit(name) {
+    // If the pre-upload is still in flight, poll briefly (max 8 s) then submit
+    if (preUploading) {
+      var btn = $('rsvpNoSubmit');
+      if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Uploading video\u2026'; }
+      var waited = 0;
+      var poll = setInterval(function() {
+        waited += 200;
+        if (!preUploading || waited >= 8000) {
+          clearInterval(poll);
+          _buildAndSubmitNow(name);
+        }
+      }, 200);
+      return;
+    }
+    _buildAndSubmitNow(name);
+  }
+
+  function _buildAndSubmitNow(name) {
     var fd = new FormData();
     fd.append('name', name);
     fd.append('attending', 'false');
-    if (recordedBlob) {
+    if (preUploadedId) {
+      // Video already on server — just pass the ID (no re-upload, fast!)
+      fd.append('videoId', preUploadedId);
+    } else if (recordedBlob) {
+      // Fallback: pre-upload failed or was skipped, send inline
       var ext = recordedBlob.type.includes('mp4') ? '.mp4'
               : recordedBlob.type.includes('ogg') ? '.ogg'
               : '.webm';
@@ -431,10 +401,35 @@ const $$ = sel => document.querySelectorAll(sel);
     var badge = $('videoRecordedBadge'); if (badge) badge.style.display = '';
 
     stopCamera(false);
+
+    // ── Begin background pre-upload immediately ──────────────
+    // The user is still filling in their name; the video travels
+    // in parallel so submit is near-instant.
+    preUploadedId = null;
+    preUploading  = true;
+    var fd = new FormData();
+    var ext = recordedBlob.type.includes('mp4') ? '.mp4'
+            : recordedBlob.type.includes('ogg') ? '.ogg'
+            : '.webm';
+    fd.append('video', recordedBlob, 'message' + ext);
+    fetch('/api/video-preupload', { method: 'POST', body: fd })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        preUploading = false;
+        if (data && data.videoId) {
+          preUploadedId = data.videoId;
+          console.log('[PRE-UPLOAD] done:', preUploadedId);
+        }
+      })
+      .catch(function(err){
+        preUploading = false;
+        console.warn('[PRE-UPLOAD] failed, will fall back to inline upload:', err);
+      });
   }
 
   function redoRecording() {
     recordedBlob = null; recordedChunks = [];
+    preUploadedId = null; preUploading = false;
     if (redoBtn)  redoBtn.style.display  = 'none';
     if (startBtn) startBtn.style.display = '';
     var pb = $('videoPlayback'); if (pb) { pb.src = ''; pb.style.display = 'none'; }
@@ -449,6 +444,7 @@ const $$ = sel => document.querySelectorAll(sel);
     if (mediaStream) { mediaStream.getTracks().forEach(function(t){ t.stop(); }); mediaStream = null; }
     if (!reset) return;
     recordedBlob = null; recordedChunks = [];
+    preUploadedId = null; preUploading = false;
     var lv = $('videoLive');
     if (lv) { lv.srcObject = null; lv.style.display = 'none'; }
     var pb = $('videoPlayback');

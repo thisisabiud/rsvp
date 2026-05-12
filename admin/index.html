@@ -79,6 +79,8 @@
     .btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); color: var(--black); }
     .btn-green { border-color: rgba(76,170,106,.3); color: var(--green); }
     .btn-green:hover { background: var(--green); color: var(--black); border-color: var(--green); }
+    .btn-danger { border-color: rgba(201,76,76,.25); color: var(--red); padding: 7px 12px 6px; font-size: 7px; letter-spacing: 2px; }
+    .btn-danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
     .btn:disabled { opacity: .35; pointer-events: none; }
 
     .dash-main { padding: 32px 24px; max-width: 1280px; margin: 0 auto; }
@@ -113,22 +115,16 @@
     .tab-pane.active { display: block; }
 
     /* ── Search bar ── */
-    .search-wrap {
-      position: relative; flex: 1; min-width: 180px; max-width: 320px;
-    }
+    .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 320px; }
     .search-icon {
       position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
       color: var(--gold); opacity: .4; pointer-events: none;
     }
     .search-input {
-      width: 100%;
-      background: rgba(201,168,76,.03);
-      border: 1px solid var(--gold-dim);
-      color: var(--sand);
-      padding: 9px 12px 8px 34px;
+      width: 100%; background: rgba(201,168,76,.03); border: 1px solid var(--gold-dim);
+      color: var(--sand); padding: 9px 12px 8px 34px;
       font-family: var(--fb); font-size: 14px; letter-spacing: .5px;
-      outline: none;
-      transition: border-color .3s, background .3s;
+      outline: none; transition: border-color .3s, background .3s;
     }
     .search-input::placeholder { color: var(--sand); opacity: .25; font-style: italic; }
     .search-input:focus { border-color: rgba(201,168,76,.45); background: rgba(201,168,76,.05); }
@@ -151,7 +147,6 @@
     .rsvp-table td { padding: 13px 14px; border-bottom: 1px solid rgba(201,168,76,.05); vertical-align: middle; }
     .rsvp-table tr:hover td { background: rgba(201,168,76,.025); }
     .rsvp-table tr:last-child td { border-bottom: none; }
-    .rsvp-table tr[data-hidden="true"] { display: none; }
 
     .td-name  { font-family: var(--fd); font-size: 12px; letter-spacing: 1px; color: var(--sand); }
     .td-email { font-family: var(--fb); font-size: 14px; color: var(--sand); opacity: .5; }
@@ -166,11 +161,64 @@
     .td-badge--video { color: var(--gold);  border-color: var(--gold-dim); }
 
     /* ── Checkbox ── */
-    .chk {
-      width: 16px; height: 16px; cursor: pointer;
-      accent-color: var(--gold);
-      border: 1px solid var(--gold-dim);
+    .chk { width: 16px; height: 16px; cursor: pointer; accent-color: var(--gold); border: 1px solid var(--gold-dim); }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: none; align-items: center; justify-content: center; gap: 16px;
+      padding: 20px 0 8px; border-top: 1px solid var(--gold-dim); margin-top: 4px;
     }
+    .pagination.visible { display: flex; }
+    .pg-info {
+      font-family: var(--fd); font-size: 7.5px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--sand); opacity: .45; white-space: nowrap; min-width: 180px; text-align: center;
+    }
+    .btn-pg {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--fd); font-size: 7.5px; letter-spacing: 3px; text-transform: uppercase;
+      padding: 9px 16px 7px; border: 1px solid var(--gold-dim); color: var(--sand);
+      background: transparent; cursor: pointer; transition: color .25s, border-color .25s;
+      white-space: nowrap;
+    }
+    .btn-pg:hover:not(:disabled) { color: var(--gold); border-color: rgba(201,168,76,.5); }
+    .btn-pg:disabled { opacity: .25; cursor: default; }
+
+    /* ── Confirm delete dialog ── */
+    #confirmDialog {
+      display: none; position: fixed; inset: 0; z-index: 600;
+      background: rgba(0,0,0,.82); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    #confirmDialog.open { display: flex; }
+    .confirm-box {
+      background: var(--forest); border: 1px solid rgba(201,76,76,.3);
+      padding: 36px 32px 28px; max-width: 360px; width: 90%; text-align: center;
+    }
+    .confirm-icon { font-size: 28px; margin-bottom: 12px; }
+    .confirm-title {
+      font-family: var(--fd); font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--red); margin-bottom: 14px;
+    }
+    .confirm-msg {
+      font-family: var(--fb); font-style: italic; font-size: 15px;
+      color: var(--sand); opacity: .7; margin-bottom: 8px; line-height: 1.7;
+    }
+    .confirm-name {
+      font-family: var(--fd); font-size: 11px; letter-spacing: 2px;
+      color: var(--gold-light); font-style: normal;
+    }
+    .confirm-warn {
+      font-family: var(--fd); font-size: 7.5px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--sand); opacity: .35; margin-bottom: 24px;
+    }
+    .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+    .btn-confirm-del {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--fd); font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
+      padding: 11px 20px 9px; border: 1px solid var(--red); color: #fff;
+      background: var(--red); cursor: pointer; transition: background .25s;
+    }
+    .btn-confirm-del:hover { background: #a53a3a; }
 
     /* ── Video preview modal ── */
     #videoModal {
@@ -191,8 +239,7 @@
     .modal-close {
       position: absolute; top: 14px; right: 16px;
       font-family: var(--fd); font-size: 8px; letter-spacing: 3px; color: var(--sand);
-      opacity: .45; cursor: pointer; background: none; border: none;
-      transition: opacity .2s;
+      opacity: .45; cursor: pointer; background: none; border: none; transition: opacity .2s;
     }
     .modal-close:hover { opacity: 1; }
     .modal-footer { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
@@ -200,10 +247,6 @@
     .empty-state {
       text-align: center; padding: 60px 20px;
       font-family: var(--fb); font-style: italic; font-size: 17px; color: var(--sand); opacity: .3;
-    }
-    .no-results {
-      text-align: center; padding: 40px 20px;
-      font-family: var(--fb); font-style: italic; font-size: 15px; color: var(--sand); opacity: .25;
     }
 
     /* ── Toast ── */
@@ -293,14 +336,29 @@
       <table class="rsvp-table" id="tableAttending">
         <thead>
           <tr>
-            <th>#</th><th>Full Name</th><th>Email</th><th>Date</th><th>Status</th>
+            <th style="width:44px">#</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th style="width:100px">Actions</th>
           </tr>
         </thead>
         <tbody id="bodyAttending">
-          <tr class="loading-row"><td colspan="5"><div class="spinner"></div></td></tr>
+          <tr class="loading-row"><td colspan="6"><div class="spinner"></div></td></tr>
         </tbody>
       </table>
-      <div id="noResultsAttending" class="no-results" style="display:none">No results match your search.</div>
+      <div class="pagination" id="pagination-attending">
+        <button class="btn-pg" id="pgPrev-attending" onclick="changePage('attending',-1)">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M7 1L3 5l4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Prev
+        </button>
+        <span class="pg-info" id="pgInfo-attending"></span>
+        <button class="btn-pg" id="pgNext-attending" onclick="changePage('attending',1)">
+          Next
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 1l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- ── Not Attending tab ── -->
@@ -329,17 +387,31 @@
         <thead>
           <tr>
             <th style="width:36px">
-              <!-- master checkbox -->
               <input type="checkbox" class="chk" id="masterChk" onchange="masterToggle(this)">
             </th>
-            <th>Full Name</th><th>Date</th><th>Video</th><th>Preview</th><th>Download</th>
+            <th>Full Name</th>
+            <th>Date</th>
+            <th>Video</th>
+            <th>Preview</th>
+            <th>Download</th>
+            <th style="width:100px">Actions</th>
           </tr>
         </thead>
         <tbody id="bodyDeclining">
-          <tr class="loading-row"><td colspan="6"><div class="spinner"></div></td></tr>
+          <tr class="loading-row"><td colspan="7"><div class="spinner"></div></td></tr>
         </tbody>
       </table>
-      <div id="noResultsDeclining" class="no-results" style="display:none">No results match your search.</div>
+      <div class="pagination" id="pagination-declining">
+        <button class="btn-pg" id="pgPrev-declining" onclick="changePage('declining',-1)">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M7 1L3 5l4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Prev
+        </button>
+        <span class="pg-info" id="pgInfo-declining"></span>
+        <button class="btn-pg" id="pgNext-declining" onclick="changePage('declining',1)">
+          Next
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 1l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
     </div>
   </main>
 </div>
@@ -360,15 +432,41 @@
   </div>
 </div>
 
+<!-- ══ Confirm Delete Dialog ══ -->
+<div id="confirmDialog">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠</div>
+    <div class="confirm-title">Confirm Deletion</div>
+    <p class="confirm-msg">Remove the RSVP entry for<br><span class="confirm-name" id="confirmName"></span>?</p>
+    <p class="confirm-warn">This cannot be undone. Any attached video will also be deleted.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm-del" id="confirmYes" onclick="confirmDelete()">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 3h7M4 3V2h3v1M4.5 5v3M6.5 5v3M2.5 3l.5 6h5l.5-6" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Yes, Delete
+      </button>
+      <button class="btn" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast"></div>
 
 <script>
 'use strict';
 
-let TOKEN = localStorage.getItem('cmg80_token') || '';
+const PAGE_SIZE = 15;
+
+let TOKEN    = localStorage.getItem('cmg80_token') || '';
 let allRsvps = [];
 let modalFile = ''; let modalName = '';
+let pendingDeleteId = null;
+
+/* ── Pagination / filter state ── */
+const pgState = {
+  attending: { page: 1, query: '' },
+  declining: { page: 1, query: '' }
+};
 
 /* ── Auth ── */
 function doLogin() {
@@ -429,44 +527,68 @@ function refreshData() { loadData(); toast('Refreshed'); }
 /* ── Stats ── */
 function renderStats() {
   const videos = allRsvps.filter(r => r.videoFile);
-  document.getElementById('statTotal').textContent    = allRsvps.length;
+  document.getElementById('statTotal').textContent     = allRsvps.length;
   document.getElementById('statAttending').textContent = allRsvps.filter(r => r.attending).length;
   document.getElementById('statDeclining').textContent = allRsvps.filter(r => !r.attending).length;
-  document.getElementById('statVideos').textContent   = videos.length;
+  document.getElementById('statVideos').textContent    = videos.length;
   document.getElementById('btnDlAll').disabled = videos.length === 0;
 }
 
-/* ── Tables ── */
+/* ── Date format ── */
 function fmtDate(iso) {
   return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
 }
 
+/* ── Render both tables ── */
 function renderTables() {
-  const attending = allRsvps.filter(r => r.attending);
-  const declining = allRsvps.filter(r => !r.attending);
+  renderTable('attending');
+  renderTable('declining');
+}
 
-  /* Attendees */
-  const bA = document.getElementById('bodyAttending');
-  if (!attending.length) {
-    bA.innerHTML = '<tr><td colspan="5"><div class="empty-state">No attendees yet.</div></td></tr>';
-  } else {
-    bA.innerHTML = attending.map((r, i) => `
-      <tr data-search="${esc((r.name + ' ' + (r.email||'')).toLowerCase())}">
-        <td class="td-date">${i + 1}</td>
+/* ── Render a single table with pagination ── */
+function renderTable(tab) {
+  const s       = pgState[tab];
+  const isAtt   = tab === 'attending';
+  const colspan = isAtt ? 6 : 7;
+  const data    = allRsvps.filter(r => isAtt ? r.attending : !r.attending);
+
+  // Apply search filter
+  const filtered = s.query
+    ? data.filter(r => (r.name + ' ' + (r.email || '')).toLowerCase().includes(s.query))
+    : data;
+
+  // Clamp page
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  s.page = Math.max(1, Math.min(s.page, totalPages));
+
+  const offset = (s.page - 1) * PAGE_SIZE;
+  const slice  = filtered.slice(offset, offset + PAGE_SIZE);
+
+  const bodyEl = document.getElementById(isAtt ? 'bodyAttending' : 'bodyDeclining');
+
+  if (!filtered.length) {
+    const msg = s.query
+      ? 'No results match your search.'
+      : (isAtt ? 'No attendees yet.' : 'No regrets submitted yet.');
+    bodyEl.innerHTML = `<tr><td colspan="${colspan}"><div class="empty-state">${msg}</div></td></tr>`;
+  } else if (isAtt) {
+    bodyEl.innerHTML = slice.map((r, i) => `
+      <tr>
+        <td class="td-date">${offset + i + 1}</td>
         <td class="td-name">${esc(r.name)}</td>
         <td class="td-email">${esc(r.email || '—')}</td>
         <td class="td-date">${fmtDate(r.submittedAt)}</td>
         <td><span class="td-badge td-badge--yes">✦ Attending</span></td>
+        <td>
+          <button class="btn btn-danger" onclick="promptDelete('${esc(r.id)}','${esc(r.name)}')">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3h6M4 3V2h2v1M4.5 5v3M5.5 5v3M3 3l.5 5h3L7 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Delete
+          </button>
+        </td>
       </tr>`).join('');
-  }
-
-  /* Declining */
-  const bD = document.getElementById('bodyDeclining');
-  if (!declining.length) {
-    bD.innerHTML = '<tr><td colspan="6"><div class="empty-state">No regrets submitted yet.</div></td></tr>';
   } else {
-    bD.innerHTML = declining.map(r => `
-      <tr data-search="${esc(r.name.toLowerCase())}">
+    bodyEl.innerHTML = slice.map(r => `
+      <tr>
         <td>
           ${r.videoFile
             ? `<input type="checkbox" class="chk video-chk" data-file="${esc(r.videoFile)}" data-name="${esc(r.name)}" onchange="updateSelection()">`
@@ -495,27 +617,48 @@ function renderTables() {
                </button>`
             : '—'}
         </td>
+        <td>
+          <button class="btn btn-danger" onclick="promptDelete('${esc(r.id)}','${esc(r.name)}')">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3h6M4 3V2h2v1M4.5 5v3M5.5 5v3M3 3l.5 5h3L7 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Delete
+          </button>
+        </td>
       </tr>`).join('');
   }
 
-  updateSelection();
-  filterTable('attending');
-  filterTable('declining');
+  // Pagination controls
+  const pgEl   = document.getElementById('pagination-' + tab);
+  const pgInfo = document.getElementById('pgInfo-' + tab);
+  const pgPrev = document.getElementById('pgPrev-' + tab);
+  const pgNext = document.getElementById('pgNext-' + tab);
+
+  if (filtered.length > PAGE_SIZE) {
+    pgEl.classList.add('visible');
+    pgInfo.textContent = `Page ${s.page} of ${totalPages}  ·  ${filtered.length} entries`;
+    pgPrev.disabled = s.page <= 1;
+    pgNext.disabled = s.page >= totalPages;
+  } else {
+    pgEl.classList.remove('visible');
+  }
+
+  if (!isAtt) updateSelection();
+}
+
+/* ── Page navigation ── */
+function changePage(tab, delta) {
+  pgState[tab].page += delta;
+  renderTable(tab);
+  // Scroll table into view smoothly
+  const tableId = tab === 'attending' ? 'tableAttending' : 'tableDeclining';
+  document.getElementById(tableId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 /* ── Search / filter ── */
 function filterTable(tab) {
-  const query = document.getElementById('search' + (tab === 'attending' ? 'Attending' : 'Declining')).value.toLowerCase().trim();
-  const rows  = document.querySelectorAll('#body' + (tab === 'attending' ? 'Attending' : 'Declining') + ' tr[data-search]');
-  const noRes = document.getElementById('noResults' + (tab === 'attending' ? 'Attending' : 'Declining'));
-  let visible = 0;
-  rows.forEach(row => {
-    const match = !query || row.dataset.search.includes(query);
-    row.setAttribute('data-hidden', match ? 'false' : 'true');
-    if (match) visible++;
-  });
-  if (noRes) noRes.style.display = (rows.length > 0 && visible === 0) ? 'block' : 'none';
-  if (tab === 'declining') updateSelection();
+  const inputId = tab === 'attending' ? 'searchAttending' : 'searchDeclining';
+  pgState[tab].query = document.getElementById(inputId).value.toLowerCase().trim();
+  pgState[tab].page  = 1;
+  renderTable(tab);
 }
 
 /* ── Checkbox selection ── */
@@ -527,27 +670,62 @@ function updateSelection() {
 
   const master = document.getElementById('masterChk');
   if (master) {
-    const visibleWithVideo = Array.from(all).filter(b => b.closest('tr').getAttribute('data-hidden') !== 'true');
-    master.checked       = visibleWithVideo.length > 0 && visibleWithVideo.every(b => b.checked);
+    master.checked       = all.length > 0 && Array.from(all).every(b => b.checked);
     master.indeterminate = checked.length > 0 && !master.checked;
   }
 }
 
 function masterToggle(master) {
-  const boxes = document.querySelectorAll('.video-chk');
-  boxes.forEach(b => {
-    if (b.closest('tr').getAttribute('data-hidden') !== 'true') b.checked = master.checked;
-  });
+  document.querySelectorAll('.video-chk').forEach(b => { b.checked = master.checked; });
   updateSelection();
 }
 
 function toggleSelectAll() {
-  const boxes   = Array.from(document.querySelectorAll('.video-chk')).filter(b => b.closest('tr').getAttribute('data-hidden') !== 'true');
-  const allOn   = boxes.every(b => b.checked);
+  const boxes = Array.from(document.querySelectorAll('.video-chk'));
+  const allOn = boxes.every(b => b.checked);
   boxes.forEach(b => { b.checked = !allOn; });
   updateSelection();
   document.getElementById('btnSelectAll').textContent = allOn ? 'Select All' : 'Deselect All';
 }
+
+/* ── Delete ── */
+function promptDelete(id, name) {
+  pendingDeleteId = id;
+  document.getElementById('confirmName').textContent = name;
+  document.getElementById('confirmDialog').classList.add('open');
+}
+
+function closeConfirm() {
+  pendingDeleteId = null;
+  document.getElementById('confirmDialog').classList.remove('open');
+}
+
+function confirmDelete() {
+  const id = pendingDeleteId;
+  if (!id) return;
+  closeConfirm();
+
+  fetch('/admin/api/rsvp/' + encodeURIComponent(id), {
+    method: 'DELETE',
+    headers: { Authorization: 'Bearer ' + TOKEN }
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
+      allRsvps = allRsvps.filter(r => r.id !== id);
+      renderStats();
+      renderTables();
+      toast('Entry deleted');
+    } else {
+      toast('Delete failed: ' + (d.error || 'Unknown error'));
+    }
+  })
+  .catch(() => toast('Delete request failed'));
+}
+
+document.getElementById('confirmDialog').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirmDialog')) closeConfirm();
+});
 
 /* ── Video preview modal ── */
 function openPreview(filename, name) {
@@ -663,10 +841,12 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
 
-/* ── Escape ── */
+/* ── Escape HTML ── */
 function esc(s) {
   if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 </script>
 </body>

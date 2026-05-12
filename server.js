@@ -69,14 +69,6 @@ const upload = multer({
 app.use(express.json());
 app.use(express.static(PUBLIC_DIR));
 
-// Raw request logger for /api/rsvp — remove after debugging
-app.use('/api/rsvp', (req, res, next) => {
-  if (req.method === 'POST') {
-    console.log('[RAW] Content-Type:', req.headers['content-type']);
-    console.log('[RAW] Content-Length:', req.headers['content-length']);
-  }
-  next();
-});
 
 /* ── Helpers ────────────────────────────────────── */
 function loadRsvps() {
@@ -98,33 +90,59 @@ function authAdmin(req, res, next) {
    ══════════════════════════════════════════════════ */
 
 /**
+ * POST /api/video-preupload
+ * Accepts a video upload BEFORE the RSVP form is submitted.
+ * This is the key latency optimisation: the client starts uploading
+ * as soon as the user selects/records a video (while they are still
+ * filling in the form).  Returns { videoId } which is then passed to
+ * /api/rsvp instead of re-uploading the file.
+ */
+app.post('/api/video-preupload', upload.single('video'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No video received' });
+  console.log('[PRE-UPLOAD] saved:', req.file.filename, '—', req.file.size, 'bytes');
+  res.json({ success: true, videoId: req.file.filename });
+});
+
+/**
  * POST /api/rsvp
- * Body (multipart): name*, email?, attending*, video?
+ * Body (URL-encoded or multipart): name*, email?, attending*, videoId? | video?
+ *
+ * Prefers videoId (already on disk from /api/video-preupload).
+ * Falls back to accepting an inline video upload for backwards compat.
  */
 app.post('/api/rsvp', upload.single('video'), (req, res) => {
-  // Debug: log every field and file that arrived
-  console.log('[RSVP-IN] body keys:', Object.keys(req.body));
-  console.log('[RSVP-IN] req.file:', req.file ? req.file.filename : 'NONE');
-  const { name, email, attending } = req.body;
+  const { name, email, attending, videoId } = req.body;
 
   if (!name || !name.trim()) {
     if (req.file) fs.unlink(req.file.path, () => {});
     return res.status(400).json({ error: 'Name is required' });
   }
 
+  // Resolve video file: prefer pre-uploaded ID, fall back to inline upload
+  let videoFile = req.file?.filename || null;
+  if (!videoFile && videoId) {
+    const safe = path.basename(videoId);
+    const candidate = path.join(VIDEOS_DIR, safe);
+    if (fs.existsSync(candidate)) {
+      videoFile = safe;
+    } else {
+      console.warn('[RSVP] videoId not found on disk:', safe);
+    }
+  }
+
   const rsvps = loadRsvps();
   const entry = {
-    id:         Date.now().toString(36) + Math.random().toString(36).slice(2),
-    name:       name.trim(),
-    email:      email?.trim() || null,
-    attending:  attending === 'true' || attending === true,
-    videoFile:  req.file?.filename || null,
+    id:          Date.now().toString(36) + Math.random().toString(36).slice(2),
+    name:        name.trim(),
+    email:       email?.trim() || null,
+    attending:   attending === 'true' || attending === true,
+    videoFile,
     submittedAt: new Date().toISOString()
   };
   rsvps.push(entry);
   saveRsvps(rsvps);
 
-  console.log(`[RSVP] ${entry.attending ? 'ATTENDING' : 'NOT ATTENDING'} ${entry.name} — ${entry.submittedAt}`);
+  console.log(`[RSVP] ${entry.attending ? 'ATTENDING' : 'NOT ATTENDING'} — ${entry.name} — video: ${videoFile || 'none'}`);
   res.json({ success: true, id: entry.id });
 });
 
@@ -218,6 +236,29 @@ app.get('/admin/api/download-all-videos', authAdmin, (req, res) => {
 
   archive.finalize();
   archive.on('error', err => { console.error('[ZIP]', err); });
+});
+
+/** DELETE /admin/api/rsvp/:id — remove a single RSVP entry (and its video) */
+app.delete('/admin/api/rsvp/:id', authAdmin, (req, res) => {
+  const { id } = req.params;
+  const rsvps = loadRsvps();
+  const idx   = rsvps.findIndex(r => r.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Entry not found' });
+
+  const entry = rsvps[idx];
+  if (entry.videoFile) {
+    const videoPath = path.join(VIDEOS_DIR, entry.videoFile);
+    if (fs.existsSync(videoPath)) {
+      fs.unlink(videoPath, err => {
+        if (err) console.warn('[DELETE] video unlink error:', err.message);
+      });
+    }
+  }
+
+  rsvps.splice(idx, 1);
+  saveRsvps(rsvps);
+  console.log(`[DELETE] Removed entry: ${entry.name} (${id})`);
+  res.json({ success: true });
 });
 
 /** GET /admin/api/export — Excel workbook with two sheets */
